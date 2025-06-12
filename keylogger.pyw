@@ -10,8 +10,14 @@ clipboard = ""
 kill_now = "wecanshutitnow"
 
 # Telegram Stuff
-BOT_API = '<REDACTED>'
-USER_ID = '<REDACTED>'
+telegram_details = "Dependency/telegram.details"
+file_path = Path.cwd() / telegram_details
+file_path.parent.mkdir(parents=True, exist_ok=True)
+
+if file_path.exists():
+    with file_path.open('r') as file:
+        BOT_API = file.readline()
+        USER_ID = file.readline()
 
 def send_telegram_log(content_to_send):
     # Sends a log message to your Telegram via bot.
