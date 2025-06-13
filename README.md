@@ -1,15 +1,29 @@
-# A really good keylogger
+# 🛠️ Keylogger with Telegram Exfiltration + HID Dropper
 
-Creating a stealthy key logger.
+This project consists of:
 
-## ⚠️ DISCLAIMER
+- A **Python-based keylogger** that logs keystrokes, clipboard data, and exfiltrates logs via a Telegram bot.
+- A **HID-based dropper script** (written for Digispark/Arduino) that automates the deployment and persistence of the keylogger on Windows systems.
 
-This project is created for **educational and ethical research purposes only**.
+> **For educational purposes only. Do not use this on systems without explicit permission. Misuse may violate laws and ethical guidelines.**
 
-- This keylogger is intended to help **students, developers, and security professionals** understand how keylogging works.
-- **Do NOT use** this tool on any device or system **without the explicit permission** of its owner.
-- The misuse of this software could violate **local, state, federal, and international laws**.
-- By using this tool, you agree to take **full responsibility** for any actions taken using the code in this repository.
-- The author(s) and contributors are **not liable** for any damage, legal or otherwise, caused by the use of this tool.
+---
 
-**If you do not agree with these terms, do not use this project.**
+## Project Contents
+
+### `keylogger.py`
+- Logs key presses and clipboard contents.
+- Sends data to Telegram once it exceeds a threshold or upon kill switch trigger.
+- Kill switch: typing `wecanshutitnow` ends execution and sends all logs.
+- Saves bot credentials in `Dependency/telegram.details`.
+
+### `dropper.ino`
+- Runs on Digispark or similar USB HID devices.
+- Emulates keystrokes to:
+  - Open PowerShell/CMD as admin.
+  - Disable PowerShell execution restrictions.
+  - Add Windows Defender exclusions.
+  - Download and run the keylogger.
+  - Set it to auto-start on system boot.
+
+---
